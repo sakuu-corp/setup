@@ -46,19 +46,19 @@ if [ -z "${github_email}" ]; then
   github_email="${username}@localhost"
   echo "Using '${username}@localhost' as GitHub email."
 fi
-echo "Setting up GitHub SSH configuration for '${username}' user using the password provided..."
+echo "Setting up GitHub SSH configuration for '${username}' user..."
 sudo -u "${username}" bash <<EOF
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 chmod 644 ~/.ssh/known_hosts
 
-eval "$(ssh-agent -s)"
-eval "\$(ssh-agent -s)"
-export SSH_AUTH_SOCK=\$SSH_AUTH_SOCK
+# Start SSH agent properly with socket in user's home directory
+SSH_AUTH_SOCK=~/.ssh/agent.sock
+ssh-agent -a \$SSH_AUTH_SOCK > ~/.ssh/agent.env
+source ~/.ssh/agent.env
 
-# Generate SSH key
-# Generate and add SSH key
+# Generate SSH key and add to agent
 ssh-keygen -t ed25519 -C "${username}@localhost" -f ~/.ssh/id_ed25519 -N "" <<< y
 ssh-add ~/.ssh/id_ed25519
 
