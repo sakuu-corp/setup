@@ -21,7 +21,7 @@ echo "Updating system packages..."
 apt-get update -y
 apt-get dist-upgrade -y
 echo "Installing required packages... (curl, git, ca-certificates)"
-apt-get install -y install -y curl git ca-certificates
+apt-get install -y curl git ca-certificates
 echo "System packages updated."
 
 # Set up GitHub SSH configuration
