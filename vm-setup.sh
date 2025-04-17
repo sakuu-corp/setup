@@ -41,9 +41,10 @@ mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 chmod 644 ~/.ssh/known_hosts
+
 eval "$(ssh-agent -s)"
 ssh-keygen -t ed25519 -C "${username}@localhost" -f ~/.ssh/id_ed25519 -N ""
-ssh-add ~/.ssh/id_ed25519
+SSH_AUTH_SOCK=/tmp/ssh-auth-sock.\${USER} ssh-add ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
 chmod 644 ~/.ssh/id_ed25519.pub
 echo "Public key for GitHub:"
