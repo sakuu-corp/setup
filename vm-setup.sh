@@ -54,8 +54,15 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 chmod 644 ~/.ssh/known_hosts
 
 eval "$(ssh-agent -s)"
+eval "\$(ssh-agent -s)"
+export SSH_AUTH_SOCK=\$SSH_AUTH_SOCK
+
+# Generate SSH key
+# Generate and add SSH key
 ssh-keygen -t ed25519 -C "${username}@localhost" -f ~/.ssh/id_ed25519 -N "" <<< y
-SSH_AUTH_SOCK=/tmp/ssh-auth-sock.\${USER} ssh-add ~/.ssh/id_ed25519
+ssh-add ~/.ssh/id_ed25519
+
+# Set permissions for SSH keys
 chmod 600 ~/.ssh/id_ed25519
 chmod 644 ~/.ssh/id_ed25519.pub
 echo "Public key for GitHub:"
