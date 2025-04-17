@@ -66,3 +66,6 @@ echo "Preparing environment for install scripts..."
 echo "Environment ready. Switch to '${username}' user to run install scripts."
 
 echo "Setup complete. Please log in as '${username}' to continue."
+
+# Self-delete this setup script
+rm -- "$0"
