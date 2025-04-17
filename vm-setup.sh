@@ -9,12 +9,29 @@ fi
 # Create a new user
 read -p "Enter username for the new user: " username
 read -s -p "Enter password for the new '${username}' user: " password
-echo
-echo "Creating a new user '${username}'..."
-useradd -m -s /bin/bash "${username}"
+if [ -z "${username}" ] || [ -z "${password}" ]; then
+  echo "Username and password cannot be empty."
+  exit 1
+fi
+if ! [[ "${username}" =~ ^[a-z_][a-z0-9_-]*$ ]]; then
+  echo "Invalid username. Only lowercase letters, numbers, underscores, and hyphens are allowed."
+  exit 1
+fi
+if ! [[ "${password}" =~ ^[a-zA-Z0-9@#$%^&+=]{8,}$ ]]; then
+  echo "Invalid password. Password must be at least 8 characters long and can include letters, numbers, and special characters."
+  exit 1
+fi
+if ! id "${username}" &>/dev/null; then
+  echo "Creating a new user '${username}'..."
+  useradd -m -s /bin/bash "${username}"
+  echo "User '${username}' created."
+else
+  echo "User '${username}' already exists... Updating password and adding to sudo group."
+fi
+
 echo "${username}:${password}" | chpasswd
 usermod -aG sudo "${username}"
-echo "User '${username}' user created and added to sudo group."
+echo "User '${username}' added to sudo group."
 
 # Update system packages
 echo "Updating system packages..."
@@ -22,6 +39,8 @@ apt-get update -y
 apt-get dist-upgrade -y
 echo "Installing required packages... (curl, git, ca-certificates)"
 apt-get install -y curl git ca-certificates
+apt-get autoremove -y
+apt-get clean -y
 echo "System packages updated."
 
 # Set up GitHub SSH configuration
@@ -43,7 +62,7 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 chmod 644 ~/.ssh/known_hosts
 
 eval "$(ssh-agent -s)"
-ssh-keygen -t ed25519 -C "${username}@localhost" -f ~/.ssh/id_ed25519 -N ""
+ssh-keygen -t ed25519 -C "${username}@localhost" -f ~/.ssh/id_ed25519 -N "" <<< y
 SSH_AUTH_SOCK=/tmp/ssh-auth-sock.\${USER} ssh-add ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
 chmod 644 ~/.ssh/id_ed25519.pub
