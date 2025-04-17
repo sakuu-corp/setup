@@ -13,14 +13,6 @@ if [ -z "${username}" ] || [ -z "${password}" ]; then
   echo "Username and password cannot be empty."
   exit 1
 fi
-if ! [[ "${username}" =~ ^[a-z_][a-z0-9_-]*$ ]]; then
-  echo "Invalid username. Only lowercase letters, numbers, underscores, and hyphens are allowed."
-  exit 1
-fi
-if ! [[ "${password}" =~ ^[a-zA-Z0-9@\#\$\%\^\&\+\=]{8,}$ ]]; then
-  echo "Invalid password. Password must be at least 8 characters long and can include letters, numbers, and special characters."
-  exit 1
-fi
 if ! id "${username}" &>/dev/null; then
   echo "Creating a new user '${username}'..."
   useradd -m -s /bin/bash "${username}"
